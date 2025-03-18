@@ -1,0 +1,6 @@
+[Unit]
+Description=This is a test
+ExecStart=test-systemd-units
+ExecStopPost=echo hey
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,27 @@
+on:
+  workflow_call:
+    inputs:
+      derivations:
+        required: true
+        type: string
+    secrets:
+      CACHIX_AUTH_TOKEN:
+        required: true
+jobs:
+  build:
+    name: build ${{ matrix.derivation.name }}
+    strategy:
+      matrix:
+        derivation: ${{ fromJson(inputs.derivations) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cachix/install-nix-action@v27
+        if: ${{ ! matrix.derivation.isCached }}
+      - uses: cachix/cachix-action@v14
+        with:
+          name: sonos
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+        if: ${{ ! matrix.derivation.isCached }}
+      - name: build ${{ matrix.derivation.attr }}
+        run: nix-build ${{ matrix.derivation.drvPath }}
+        if: ${{ ! matrix.derivation.isCached }}
