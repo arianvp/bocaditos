@@ -3,7 +3,6 @@
   systemd,
   presets,
   stdenv,
-  fsverity-utils,
   uki,
   os-release,
 }:
@@ -27,7 +26,7 @@ stdenv.mkDerivation {
 
   inherit closure uki;
 
-  nativeBuildInputs = [ fsverity-utils ];
+  nativeBuildInputs = [ ];
 
   osRelease = os-release;
 
