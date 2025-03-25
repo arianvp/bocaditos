@@ -1,3 +1,4 @@
+# TODO: Enable erofs
 {
   linuxPackages_custom,
   fetchgit,
