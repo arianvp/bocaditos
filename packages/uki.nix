@@ -1,13 +1,15 @@
 {
   systemd,
   kernel,
+  openssl,
   initrd,
   cmdline ? "",
   os-release,
+  jq,
   lib,
   runCommand,
   stdenv,
-  isUnifiedSystemImage ? true,  # Whether the initrd contains the application
+  isUnifiedSystemImage ? true,
 }:
 let
   args = lib.cli.toGNUCommandLineShell { } {
@@ -26,22 +28,38 @@ let
     ];
     os-release = "@${os-release}";
     inherit cmdline;
-    output = "$out/vmlinux.efi";
     measure = true;
-    # no initrd transition happens. So we only have two barriers
-    phases = if isUnifiedSystemImage "sysinit,sysinit:ready" else null;
+    json = "pretty";
+    phases = if isUnifiedSystemImage then "sysinit,sysinit:ready" else null;
+    pcr-private-key = "private-key.pem";
+    pcr-public-key = "public-key.pem";
   };
 in
 let
-  uki = runCommand "uki" {
-    nativeBuildInputs = [ systemd ];
-    # allowedReferences = [ kernel ];
-    passthru.tests.ukify-inspect = runCommand "ukify-inspect" {
-      nativeBuildInputs = [ systemd ];
-    } "ukify inspect ${uki} --json=pretty > $out";
-  } ''
-    mkdir -p $out
-    ukify build ${args} >> $out/pcrs.txt
-  '';
+  uki =
+    runCommand "uki"
+      {
+        nativeBuildInputs = [
+          systemd
+          openssl
+          jq
+        ];
+        # allowedReferences = [ kernel ];
+        passthru.tests.ukify-inspect = runCommand "ukify-inspect" {
+          nativeBuildInputs = [
+            systemd
+          ];
+        } "ukify inspect ${uki}/vmlinux.efi --json=pretty | tee $out";
+      }
+      ''
+        mkdir -p $out
+        # NOTE: signing with a throw-away key for now
+        openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out private-key.pem
+        openssl rsa -pubout -in private-key.pem -out public-key.pem
+
+        ukify build --output "$out/vmlinux.efi" ${args}
+        cp public-key.pem "$out/pcrpkey.pem"
+        ukify inspect "$out/vmlinux.efi" --json=pretty | jq -r '.[".pcrsig"].text' | jq . > "$out/pcrsig.json"
+      '';
 in
 uki

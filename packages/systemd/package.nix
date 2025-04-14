@@ -82,7 +82,7 @@ let
     };
     tpm2 = {
       buildInputs = [ tpm2-tss ];
-      enable = false;
+      enable = true;
     };
     pam = {
       buildInputs = [ pam ];
@@ -110,7 +110,7 @@ stdenv.mkDerivation (
 
     inherit src;
 
-    srcs = [ src ] ;
+    srcs = [ src ];
 
     sourceRoot = "systemd";
 
