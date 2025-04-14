@@ -1,5 +1,4 @@
 {
-  lib,
   makeInitrdNG,
   systemd,
   glibc,
