@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         derivation: ${{ fromJson(inputs.derivations) }}
-    runs-on: ${{ (matrix.deriation.system == 'aarch64-linux' && 'ubuntu-24.04-arm')  || (matrix.derivation.system == 'x86_64-linux' && 'ubuntu-latest') || 'unknown' }}
+    runs-on: ${{ (matrix.derivation.system == 'aarch64-linux' && 'ubuntu-24.04-arm')  || (matrix.derivation.system == 'x86_64-linux' && 'ubuntu-latest') || 'unknown' }}
     steps:
       - uses: cachix/install-nix-action@v27
         if: ${{ ! matrix.derivation.isCached }}
