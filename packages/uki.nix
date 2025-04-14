@@ -7,6 +7,7 @@
   lib,
   runCommand,
   stdenv,
+  isUnifiedSystemImage ? true,  # Whether the initrd contains the application
 }:
 let
   args = lib.cli.toGNUCommandLineShell { } {
@@ -25,15 +26,22 @@ let
     ];
     os-release = "@${os-release}";
     inherit cmdline;
+    output = "$out/vmlinux.efi";
+    measure = true;
+    # no initrd transition happens. So we only have two barriers
+    phases = if isUnifiedSystemImage "sysinit,sysinit:ready" else null;
   };
 in
 let
   uki = runCommand "uki" {
     nativeBuildInputs = [ systemd ];
-    allowedReferences = [ kernel ];
+    # allowedReferences = [ kernel ];
     passthru.tests.ukify-inspect = runCommand "ukify-inspect" {
       nativeBuildInputs = [ systemd ];
     } "ukify inspect ${uki} --json=pretty > $out";
-  } "ukify build ${args} --output $out";
+  } ''
+    mkdir -p $out
+    ukify build ${args} >> $out/pcrs.txt
+  '';
 in
 uki
