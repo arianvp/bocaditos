@@ -9,7 +9,7 @@ on:
         required: true
 jobs:
   build:
-    name: build ${{ matrix.derivation.name }}
+    name: build ${{ matrix.derivation.name }} ${{ matrix.derivation.system }}
     strategy:
       matrix:
         derivation: ${{ fromJson(inputs.derivations) }}
