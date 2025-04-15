@@ -100,13 +100,14 @@ stdenv.mkDerivation (
       name = "systemd";
       owner = "systemd";
       repo = "systemd";
-      rev = "v${finalAttrs.version}";
-      hash = "sha256-A64RK+EIea98dpq8qzXld4kbDGvYsKf/vDnNtMmwSBM=";
+      # rev = "v${finalAttrs.version}";
+      rev = "6d203bd830de999de48858da069b644f8a8d0938";
+      hash = "sha256-0/E2/hjb63GphLcSy9e/HxoSPsY4b98pfwYKkXjlnvQ=";
     };
   in
   {
     pname = "systemd";
-    version = "257.2";
+    version = "258.0pre";
 
     inherit src;
 
