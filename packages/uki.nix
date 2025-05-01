@@ -99,7 +99,7 @@ let
             --linux=${linux} \
             --initrd=${initrd'} \
             --json=pretty \
-            --pcrpkey=tpm2-pcr-public-key.pem > "$out/policy.json"
+            --pcrpkey=tpm2-pcr-public-key.pem > "$out/policy-digest.json"
       '';
 in
 uki
