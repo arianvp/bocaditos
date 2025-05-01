@@ -1,5 +1,4 @@
 {
-  lib,
   makeInitrdNG,
   systemd,
   glibc,
@@ -12,6 +11,7 @@
   kmod,
   kbd,
   shadow,
+  isUnifiedSystemImage ? true,
 }:
 
 let
@@ -127,7 +127,7 @@ in
     }
     {
       target = "/etc";
-      source = "${etc.override { inInitrd = false; }}/etc";
+      source = "${etc.override { inInitrd = !isUnifiedSystemImage; }}/etc";
     }
   ] ++ map (path: { source = path; }) storePaths;
 }).overrideAttrs

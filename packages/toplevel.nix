@@ -1,7 +1,7 @@
 {
   closureInfo,
   systemd,
-  presets,
+  etc,
   stdenv,
   uki,
   os-release,
@@ -12,7 +12,7 @@ let
   closure = closureInfo {
     rootPaths = [
       systemd
-      presets
+      etc
     ];
   };
 
