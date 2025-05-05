@@ -20,7 +20,7 @@ let
     "m" = 2048;
     "kernel" = "${kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     "initrd" = "${initrd}/initrd";
-    "append" = "loglevel=3 console=ttyAMA0";
+    "append" = "loglevel=3 console=hvc0";
   };
 in
 

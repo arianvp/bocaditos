@@ -4,7 +4,7 @@
   openssl,
   binutils,
   initrd,
-  cmdline ? "",
+  cmdline ? "loglevel=3 console=ttyAMA0",
   os-release,
   jq,
   lib,

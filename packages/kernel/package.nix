@@ -1,9 +1,10 @@
 # TODO: Enable erofs
 {
   linuxPackages_custom,
+  linuxPackages_latest,
   fetchgit,
-}:
-(linuxPackages_custom {
+}: linuxPackages_latest.kernel
+/*(linuxPackages_custom {
   version = "6.1.128-3.201.amzn2023";
   modDirVersion = "6.1.128";
   src = fetchgit {
@@ -13,4 +14,4 @@
   };
   configfile = ./microvm-kernel-ci-aarch64-6.1.config;
   allowImportFromDerivation = false;
-}).kernel
+}).kernel*/

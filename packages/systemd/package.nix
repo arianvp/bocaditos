@@ -46,6 +46,10 @@ let
   # Meson features
   # TODO: Feature dependencies
   features = {
+    vmspawn = {
+      buildInputs = [];
+      enable = true;
+    };
     ukify = {
       buildInputs = [
         (python3Packages.python.withPackages (ps: with ps; [ pefile ]))
@@ -96,7 +100,7 @@ stdenv.mkDerivation (
   finalAttrs:
 
   let
-    src = fetchFromGitHub {
+    src' = fetchFromGitHub {
       name = "systemd";
       owner = "systemd";
       repo = "systemd";
@@ -104,6 +108,8 @@ stdenv.mkDerivation (
       rev = "6d203bd830de999de48858da069b644f8a8d0938";
       hash = "sha256-0/E2/hjb63GphLcSy9e/HxoSPsY4b98pfwYKkXjlnvQ=";
     };
+
+    src = ../../../systemd;
   in
   {
     pname = "systemd";
