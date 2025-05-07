@@ -100,16 +100,15 @@ stdenv.mkDerivation (
   finalAttrs:
 
   let
-    src' = fetchFromGitHub {
+    src = fetchFromGitHub {
       name = "systemd";
       owner = "systemd";
       repo = "systemd";
       # rev = "v${finalAttrs.version}";
-      rev = "6d203bd830de999de48858da069b644f8a8d0938";
-      hash = "sha256-0/E2/hjb63GphLcSy9e/HxoSPsY4b98pfwYKkXjlnvQ=";
+      rev = "2e72d3efafa88c1cb4d9b28dd4ade7c6ab7be29a";
+      hash = "sha256-w5YWYzuQygEotS7Fxm6MG6eg8uwDUtoP36bGd076tlo=";
     };
 
-    src = ../../../systemd;
   in
   {
     pname = "systemd";
