@@ -81,7 +81,7 @@ let
     # serial-getty@.service
     # which calls ${shadow}/bin/login I think but I hope stdenv takes care of this
     "${util-linuxMinimal}/bin/agetty"
-    "${util-linuxMinimal}/bin/login"
+    # "${util-linuxMinimal}/bin/login"
     # TODO: We should use util-linux `/bin/login`
     "${shadow}/bin/login"
 
