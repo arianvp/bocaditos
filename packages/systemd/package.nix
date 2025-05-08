@@ -3,7 +3,6 @@
   lib,
 
   fetchFromGitHub,
-  fetchpatch,
 
   autoPatchelfHook,
   patch-systemd-units,
@@ -47,7 +46,7 @@ let
   # TODO: Feature dependencies
   features = {
     vmspawn = {
-      buildInputs = [];
+      buildInputs = [ ];
       enable = true;
     };
     ukify = {
