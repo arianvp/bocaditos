@@ -6,7 +6,7 @@ let
   lib = import "${nixpkgs}/lib";
   hostPlatform = lib.recursiveUpdate (lib.systems.elaborate system) (
     lib.optionalAttrs (system == "aarch64-linux") {
-      linux-kernel.target = "vmlinuz.efi";
+      # linux-kernel.target = "vmlinuz.efi";
     }
   );
   pkgs = import nixpkgs {

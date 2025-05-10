@@ -12,6 +12,6 @@ writeShellApplication {
     jq
   ];
   text = ''
-    nix-eval-jobs release.nix --check-cache-status | toposort-derivations
+    nix-eval-jobs release.nix --show-input-drvs --check-cache-status | toposort-derivations
   '';
 }
