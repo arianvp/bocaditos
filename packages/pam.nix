@@ -1,5 +1,6 @@
 # NOTE: PAM will either load from DEFAULT_MODE_PATH aka securedir aka ${pam}/lib/security
 # or it will support absolute paths
+# TODO: things are installed in $out/lib but things look in $out/lib/security
 {
   lib,
   stdenv,

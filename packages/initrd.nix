@@ -11,40 +11,14 @@
   kmod,
   kbd,
   shadow,
+  pamtester,
+  pam,
+  strace,
   isUnifiedSystemImage ? true,
 }:
 
 let
   storePaths = [
-    # systemd tooling
-    #"${systemd}/lib/systemd/systemd-executor"
-    #"${systemd}/lib/systemd/systemd-fsck"
-    #"${systemd}/lib/systemd/systemd-hibernate-resume"
-    #"${systemd}/lib/systemd/systemd-journald"
-    #"${systemd}/lib/systemd/systemd-makefs"
-    ## "${systemd}/lib/systemd/systemd-modules-load"
-    #"${systemd}/lib/systemd/systemd-remount-fs"
-    #"${systemd}/lib/systemd/systemd-shutdown"
-    #"${systemd}/lib/systemd/systemd-sulogin-shell"
-    #"${systemd}/lib/systemd/systemd-sysctl"
-    ## "${systemd}/lib/systemd/systemd-bsod"
-    #"${systemd}/lib/systemd/systemd-sysroot-fstab-check"
-    #"${systemd}/lib/systemd/systemd-time-wait-sync"
-    #"${systemd}/lib/systemd/systemd-network-generator"
-    # "${systemd}/lib/systemd"
-
-    # generators
-    # "${systemd}/lib/systemd/system-generators/systemd-debug-generator"
-    # "${systemd}/lib/systemd/system-generators/systemd-fstab-generator"
-    # "${systemd}/lib/systemd/system-generators/systemd-gpt-auto-generator"
-    # "${systemd}/lib/systemd/system-generators/systemd-hibernate-resume-generator"
-    # "${systemd}/lib/systemd/system-generators/systemd-run-generator"
-
-    # utilities needed by systemd
-    # see progs in meson.build
-    # TODO: automatic? How?
-    # "${util-linuxMinimal}/bin/quotaon"
-    # "${util-linuxMinimal}/bin/quotacheck"
     "${kmod}/bin/kmod"
     "${kmod}/bin/modprobe"
     # TODO: kexec?
@@ -84,7 +58,7 @@ let
     # "${util-linuxMinimal}/bin/login"
     # TODO: We should use util-linux `/bin/login`
     "${shadow}/bin/login"
-
+    "${pam}/lib/security/pam_deny.so"
   ];
 in
 
@@ -128,6 +102,14 @@ in
     {
       target = "/etc";
       source = "${etc.override { inInitrd = !isUnifiedSystemImage; }}/etc";
+    }
+    {
+      target = "/usr/bin/pamtester";
+      source = "${pamtester}/bin/pamtester";
+    }
+    {
+      target = "/usr/bin/strace";
+      source = "${strace}/bin/strace";
     }
   ] ++ map (path: { source = path; }) storePaths;
 }).overrideAttrs

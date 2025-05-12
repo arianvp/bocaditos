@@ -4,7 +4,8 @@
   openssl,
   binutils,
   initrd,
-  cmdline ? "loglevel=3 console=hvc0",
+  # TODO: no matter what I do, this seems to be ignored?
+  cmdline ? "rd.systemd.unit=emergency.service",
   os-release,
   jq,
   lib,
@@ -85,6 +86,9 @@ let
             --json=pretty \
             > "$out/measure.json"
 
+        ukify inspect "uki.efi" --json=pretty > "$out/inspect.json"
+
+        # TODO: cmdline
         # HACK:
         objcopy --remove-section=.pcrsig --remove-section=.pcrpkey "uki.efi" "$out/uki.efi"
         inspect=$(ukify inspect "$out/uki.efi" --json=short)
