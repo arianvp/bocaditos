@@ -1,6 +1,7 @@
 {
   buildEnv,
   nix-eval-jobs,
+  npins,
   build-schedule,
   jq,
   ijq,
@@ -12,5 +13,6 @@ buildEnv {
     build-schedule
     jq
     ijq
+    npins
   ];
 }

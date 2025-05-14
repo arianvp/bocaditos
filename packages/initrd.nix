@@ -5,58 +5,32 @@
   bash,
   bashInteractive,
   etc,
-  util-linuxMinimal,
+  util-linux2,
   coreutils,
   busybox,
   kmod,
   kbd,
   shadow,
+  pamtester,
+  pam,
+  strace,
   isUnifiedSystemImage ? true,
 }:
 
 let
   storePaths = [
-    # systemd tooling
-    #"${systemd}/lib/systemd/systemd-executor"
-    #"${systemd}/lib/systemd/systemd-fsck"
-    #"${systemd}/lib/systemd/systemd-hibernate-resume"
-    #"${systemd}/lib/systemd/systemd-journald"
-    #"${systemd}/lib/systemd/systemd-makefs"
-    ## "${systemd}/lib/systemd/systemd-modules-load"
-    #"${systemd}/lib/systemd/systemd-remount-fs"
-    #"${systemd}/lib/systemd/systemd-shutdown"
-    #"${systemd}/lib/systemd/systemd-sulogin-shell"
-    #"${systemd}/lib/systemd/systemd-sysctl"
-    ## "${systemd}/lib/systemd/systemd-bsod"
-    #"${systemd}/lib/systemd/systemd-sysroot-fstab-check"
-    #"${systemd}/lib/systemd/systemd-time-wait-sync"
-    #"${systemd}/lib/systemd/systemd-network-generator"
-    # "${systemd}/lib/systemd"
-
-    # generators
-    # "${systemd}/lib/systemd/system-generators/systemd-debug-generator"
-    # "${systemd}/lib/systemd/system-generators/systemd-fstab-generator"
-    # "${systemd}/lib/systemd/system-generators/systemd-gpt-auto-generator"
-    # "${systemd}/lib/systemd/system-generators/systemd-hibernate-resume-generator"
-    # "${systemd}/lib/systemd/system-generators/systemd-run-generator"
-
-    # utilities needed by systemd
-    # see progs in meson.build
-    # TODO: automatic? How?
-    # "${util-linuxMinimal}/bin/quotaon"
-    # "${util-linuxMinimal}/bin/quotacheck"
     "${kmod}/bin/kmod"
     "${kmod}/bin/modprobe"
     # TODO: kexec?
+    "${util-linux2}"
     # "${util-linuxMinimal}/bin/kexec"
-    "${util-linuxMinimal}/bin/sulogin"
-    "${util-linuxMinimal}/bin/mount"
-    "${util-linuxMinimal}/bin/umount"
+    #"${util-linuxMinimal}/bin/sulogin"
+    #"${util-linuxMinimal}/bin/mount"
+    #"${util-linuxMinimal}/bin/umount"
     "${kbd}/bin/loadkeys"
     "${kbd}/bin/setfont"
     # TODO: only the keymaps we use?
     "${kbd}/share"
-    "${util-linuxMinimal}/bin/nologin"
 
     # so NSS can look up usernames
     "${glibc}/lib/libnss_files.so.2"
@@ -80,10 +54,11 @@ let
 
     # serial-getty@.service
     # which calls ${shadow}/bin/login I think but I hope stdenv takes care of this
-    "${util-linuxMinimal}/bin/agetty"
     # "${util-linuxMinimal}/bin/login"
     # TODO: We should use util-linux `/bin/login`
-    "${shadow}/bin/login"
+    "${shadow}"
+    "${pam}"
+
 
   ];
 in
@@ -114,6 +89,10 @@ in
       source = "${busybox}/bin/busybox";
     }
     {
+      target = "/usr/bin/cat";
+      source = "${busybox}/bin/cat";
+    }
+    {
       target = "/usr/bin/systemctl";
       source = "${systemd}/bin/systemctl";
     }
@@ -128,6 +107,29 @@ in
     {
       target = "/etc";
       source = "${etc.override { inInitrd = !isUnifiedSystemImage; }}/etc";
+    }
+    {
+      target = "/usr/bin/pamtester";
+      source = "${pamtester}/bin/pamtester";
+    }
+    {
+      target = "/usr/bin/strace";
+      source = "${strace}/bin/strace";
+    }
+    # TODO: We want to not have a dependency on shadow probably? As util-linux already provides this?
+    # TODO: ${shadow}/etc/login.defs not shipped
+    # TODO  ENCRYPT_METHOD YESCRYPT
+    {
+      target = "/usr/bin/login";
+      source = "${shadow}/bin/login";
+    }
+    {
+      target = "/usr/bin/passwd";
+      source = "${shadow}/bin/passwd";
+    }
+    {
+      target = "/usr/bin/chmod";
+      source = "${busybox}/bin/busybox";
     }
   ] ++ map (path: { source = path; }) storePaths;
 }).overrideAttrs
