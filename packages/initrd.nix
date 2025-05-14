@@ -5,7 +5,7 @@
   bash,
   bashInteractive,
   etc,
-  util-linuxMinimal,
+  util-linux2,
   coreutils,
   busybox,
   kmod,
@@ -22,15 +22,15 @@ let
     "${kmod}/bin/kmod"
     "${kmod}/bin/modprobe"
     # TODO: kexec?
+    "${util-linux2}"
     # "${util-linuxMinimal}/bin/kexec"
-    "${util-linuxMinimal}/bin/sulogin"
-    "${util-linuxMinimal}/bin/mount"
-    "${util-linuxMinimal}/bin/umount"
+    #"${util-linuxMinimal}/bin/sulogin"
+    #"${util-linuxMinimal}/bin/mount"
+    #"${util-linuxMinimal}/bin/umount"
     "${kbd}/bin/loadkeys"
     "${kbd}/bin/setfont"
     # TODO: only the keymaps we use?
     "${kbd}/share"
-    "${util-linuxMinimal}/bin/nologin"
 
     # so NSS can look up usernames
     "${glibc}/lib/libnss_files.so.2"
@@ -54,11 +54,12 @@ let
 
     # serial-getty@.service
     # which calls ${shadow}/bin/login I think but I hope stdenv takes care of this
-    "${util-linuxMinimal}/bin/agetty"
     # "${util-linuxMinimal}/bin/login"
     # TODO: We should use util-linux `/bin/login`
-    "${shadow}/bin/login"
-    "${pam}/lib/security/pam_deny.so"
+    "${shadow}"
+    "${pam}"
+
+
   ];
 in
 
@@ -88,6 +89,10 @@ in
       source = "${busybox}/bin/busybox";
     }
     {
+      target = "/usr/bin/cat";
+      source = "${busybox}/bin/cat";
+    }
+    {
       target = "/usr/bin/systemctl";
       source = "${systemd}/bin/systemctl";
     }
@@ -110,6 +115,21 @@ in
     {
       target = "/usr/bin/strace";
       source = "${strace}/bin/strace";
+    }
+    # TODO: We want to not have a dependency on shadow probably? As util-linux already provides this?
+    # TODO: ${shadow}/etc/login.defs not shipped
+    # TODO  ENCRYPT_METHOD YESCRYPT
+    {
+      target = "/usr/bin/login";
+      source = "${shadow}/bin/login";
+    }
+    {
+      target = "/usr/bin/passwd";
+      source = "${shadow}/bin/passwd";
+    }
+    {
+      target = "/usr/bin/chmod";
+      source = "${busybox}/bin/busybox";
     }
   ] ++ map (path: { source = path; }) storePaths;
 }).overrideAttrs

@@ -18,7 +18,7 @@
 
   # required buildInputs
   libcap,
-  util-linuxMinimal,
+  util-linux2,
   libxcrypt,
   kbd,
   python3Packages,
@@ -29,16 +29,23 @@
   cryptsetup,
   kmod,
   pam,
+
+  withLibcryptsetup ? true,
 }:
 
 let
 
   sonoslib = import ../../lib { inherit lib; };
 
+  util-linux = util-linux2;
+
+  # TODO: This is a hack so that `getty` finds `${shadow}/bin/login` but we really ought to patch `util-linux` to use its own login binary
+  # See https://github.com/shadow-maint/shadow/issues/999 where the shadow maintainers want to drop any overlapping utils from shadow
+
   requiredBuildInputs = [
     libcap
     libxcrypt
-    util-linuxMinimal
+    util-linux
     kbd
   ];
 
@@ -62,18 +69,18 @@ let
       enable = true;
     };
     blkid = {
-      buildInputs = [ util-linuxMinimal ];
+      buildInputs = [ util-linux ];
       enable = true;
     };
     fdisk = {
-      buildInputs = [ util-linuxMinimal ];
+      buildInputs = [ util-linux ];
       enable = true;
     };
 
     # TODO: circular dependency with systemd
     libcryptsetup = {
       buildInputs = [ cryptsetup ];
-      enable = true;
+      enable = withLibcryptsetup;
     };
     repart = {
       buildInputs = [ ];

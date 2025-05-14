@@ -9,5 +9,13 @@ final: prev: {
   # hexdump = prev.util-linuxMinimal;
 
   # pam with meson
-  # pam = prev.callPackage ./packages/pam.nix { };
+  pam = prev.callPackage ./packages/pam.nix { };
+  systemd = final.callPackage ./packages/systemd/package.nix { };
+  systemdLibs = final.systemdMinimal;
+  systemdMinimal = final.systemd.override {
+    withLibcryptsetup = false;
+  };
+
+  util-linux2 = prev.util-linuxMinimal.override { shadowSupport = true; };
+  patch-systemd-units = prev.callPackage ./packages/patch-systemd-units/package.nix { };
 }

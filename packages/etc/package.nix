@@ -21,7 +21,9 @@ runCommand "etc"
 
 
     mkdir -p $DESTDIR/etc
+    ln -s ${./login.defs} $DESTDIR/etc/login.defs
     ln -s ${./pam.d} $DESTDIR/etc/pam.d
+    ln -s ${./shells} $DESTDIR/etc/shells
 
     systemd-sysusers --root=$DESTDIR
 
@@ -34,7 +36,7 @@ runCommand "etc"
     # TODO: systemd creates ../usr/lib/os-release but we want to create /run/current-system/os-release perhaps?
 
     # TODO: make these tmpfiles rules
-    # TODO: initrd-release
+    # TODO: initrd-releaseYESCRIPT
     rm -f $DESTDIR/etc/os-release
 
     if [ -n "$inInitrd" ]; then
