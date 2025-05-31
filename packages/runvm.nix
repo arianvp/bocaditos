@@ -2,12 +2,18 @@
   writeShellApplication,
   systemd,
   uki,
+  qemu_kvm,
+  virtiofsd,
 }:
 writeShellApplication {
   name = "runvm";
-  runtimeInputs = [ systemd ];
-  # TODO: remove --tpm=no once https://github.com/NixOS/nixpkgs/pull/405843 is merged
+  runtimeInputs = [
+    systemd
+    qemu_kvm
+    virtiofsd
+  ];
+  # TODO: merge with actual XDG_CONFIG_HOME ?
   text = ''
-    systemd-vmspawn --tpm=no --linux ${uki}/uki.efi
+    XDG_CONFIG_HOME=${qemu_kvm}/share systemd-vmspawn --linux ${uki}/uki.efi
   '';
 }
