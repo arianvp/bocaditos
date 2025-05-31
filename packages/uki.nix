@@ -3,7 +3,7 @@
   kernel,
   openssl,
   binutils,
-  initrd,
+  initrd2,
   cmdline ? "loglevel=3 console=hvc0",
   os-release,
   jq,
@@ -14,7 +14,7 @@
 }:
 let
   linux = "${kernel}/${stdenv.hostPlatform.linux-kernel.target}";
-  initrd' = "${initrd}/initrd";
+  initrd' = "${initrd2}/initrd.zst";
   uname = kernel.version;
   args = lib.cli.toGNUCommandLineShell { } {
     inherit linux uname;
