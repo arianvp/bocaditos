@@ -46,12 +46,15 @@ let
           binutils
           jq
         ];
+        passthru.version = kernel.version;
         # allowedReferences = [ kernel ];
         passthru.tests.ukify-inspect = runCommand "ukify-inspect" {
           nativeBuildInputs = [
             systemd
           ];
         } "ukify inspect ${uki}/uki.efi --json=pretty | tee $out";
+        osRelease = os-release;
+        kernelVersion = kernel.version;
       }
       ''
         mkdir -p $out
@@ -59,6 +62,13 @@ let
         # NOTE: These are FAKE keys just to convince ukify to run
         openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out tpm2-pcr-private-key.pem
         openssl rsa -pubout -in tpm2-pcr-private-key.pem -out tpm2-pcr-public-key.pem
+
+        # default format is  $entry_token-$kernel_version-$roothash
+        # or for NixOS  $entry_token-$kernel_version-$nixhash ?
+        # but particleos uses $IMAGE_ID-$IMAGE_VERSION-$ARCH
+
+        name="${os-release.passthru.IMAGE_ID}_${os-release.passthru.IMAGE_VERSION}_${stdenv.hostPlatform.linuxArch}.efi"
+
 
         # TODO: I'd want the following to work; but it doesn't: https://github.com/systemd/systemd/issues/37133#issuecomment-2802444683
         # ukify build \
@@ -77,7 +87,7 @@ let
 
         ukify build \
             --tools "${systemd}/lib/systemd" \
-            --output "uki.efi" \
+            --output "$name" \
             ${args} \
             --pcr-private-key tpm2-pcr-private-key.pem \
             --pcr-public-key tpm2-pcr-public-key.pem \
@@ -90,8 +100,8 @@ let
 
         # TODO: cmdline
         # HACK:
-        objcopy --remove-section=.pcrsig --remove-section=.pcrpkey "uki.efi" "$out/uki.efi"
-        inspect=$(ukify inspect "$out/uki.efi" --json=short)
+        objcopy --remove-section=.pcrsig --remove-section=.pcrpkey "$name" "$out/$name"
+        inspect=$(ukify inspect "$out/$name" --json=short)
         echo "$inspect" | jq .sbat.text > .sbat
         echo "$inspect" | jq .osrel.text > .osrel
         echo "$inspect" | jq .uname.text > .uname

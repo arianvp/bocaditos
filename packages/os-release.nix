@@ -19,5 +19,5 @@ let
 in
 format.generate "os-release" os-release
 // {
-  passthru.os-release = os-release;
+  passthru = os-release;
 }
