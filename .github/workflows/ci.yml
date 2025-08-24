@@ -14,7 +14,7 @@ jobs:
       - uses: cachix/cachix-action@v14
         with:
           name: sonos
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
       - name: nix-eval-jobs
         id: nix-eval-jobs
         run: |
@@ -23,10 +23,6 @@ jobs:
             ./shell.sh build-schedule
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
-      - name: cache derivations
-        run: echo "$layers" | jq -r .[].derivations[].drvPath | cachix push sonos
-        env:
-          layers: ${{ steps.nix-eval-jobs.outputs.layers }}
   build:
     needs: [eval]
     strategy:
@@ -39,4 +35,3 @@ jobs:
       derivations: ${{ toJson(matrix.layer.derivations)}}
     secrets:
       CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          
