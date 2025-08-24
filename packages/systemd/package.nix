@@ -32,6 +32,7 @@
   pam,
 
   withLibcryptsetup ? true,
+  withLibmount ? true,
 }:
 
 let
@@ -57,22 +58,26 @@ let
       buildInputs = [ ];
       enable = true;
     };
+
     ukify = {
       buildInputs = [
         (python3Packages.python.withPackages (ps: with ps; [ pefile ]))
       ];
       enable = true;
     };
+
     bootloader = {
       buildInputs = [ ];
       # TODO: How to handle python package in here?
       nativeBuildInputs = [ ];
       enable = true;
     };
+
     blkid = {
       buildInputs = [ util-linux ];
       enable = true;
     };
+
     fdisk = {
       buildInputs = [ util-linux ];
       enable = true;
@@ -83,10 +88,17 @@ let
       buildInputs = [ cryptsetup ];
       enable = withLibcryptsetup;
     };
+
+    libmount = {
+      buildInputs = [ util-linux ];
+      enable = withLibmount;
+    };
+
     repart = {
       buildInputs = [ ];
       enable = true;
     };
+
     openssl = {
       buildInputs = [ openssl ];
       enable = true;
