@@ -14,16 +14,17 @@
   ninja,
   pkg-config,
   getent,
-  buildPackages,
+  buildPackages, # jinja2
+  breakpointHook,
 
   # required buildInputs
   libcap,
   util-linux2,
   libxcrypt,
   kbd,
-  python3Packages,
 
   # optional build inputs
+  python3Packages, # pefile
   openssl,
   tpm2-tss,
   cryptsetup,
@@ -110,15 +111,14 @@ stdenv.mkDerivation (
       name = "systemd";
       owner = "systemd";
       repo = "systemd";
-      # rev = "v${finalAttrs.version}";
-      rev = "2e72d3efafa88c1cb4d9b28dd4ade7c6ab7be29a";
-      hash = "sha256-w5YWYzuQygEotS7Fxm6MG6eg8uwDUtoP36bGd076tlo=";
+      rev = "v${finalAttrs.version}";
+      hash = "sha256-F2BM/BkMpsk4x7rVas/5zgHcmTLE+OXWvzG+KQPY/Wo=";
     };
 
   in
   {
     pname = "systemd";
-    version = "258.0pre";
+    version = "258-rc3";
 
     inherit src;
 
@@ -133,6 +133,8 @@ stdenv.mkDerivation (
       ninja
       pkg-config
 
+      breakpointHook
+
       autoPatchelfHook
       patch-systemd-units
 
@@ -144,7 +146,8 @@ stdenv.mkDerivation (
         # TODO: move up to features
         p.pyelftools
       ]))
-    ] ++ lib.optional (stdenv.hostPlatform.isLinux) [ getent ];
+    ]
+    ++ lib.optional (stdenv.hostPlatform.isLinux) [ getent ];
 
     buildInputs =
       requiredBuildInputs
@@ -178,15 +181,17 @@ stdenv.mkDerivation (
 
     # lets disable everything by default
     # See https://drobilla.net/2022/08/16/on-meson-features.html
-    mesonAutoFeatures = "disabled";
+    mesonAutoFeatures = "auto";
 
     mesonFlags = [
       (lib.mesonOption "time-epoch" "1734643670")
+      (lib.mesonOption "mode" "release")
 
       # disable sysvinit compat
       (lib.mesonOption "sysvinit-path" "")
       (lib.mesonOption "sysvrcnd-path" "")
       (lib.mesonOption "rc-local" "")
+      (lib.mesonOption "split-bin" "false")
       # (lib.mesonOption "loadkeys-path" "${kbd}/bin/loadkeys")
       # (lib.mesonOption "setfont-path" "${kbd}/bin/setfond")
       # (lib.mesonOption "tty-gid" "")
@@ -228,7 +233,8 @@ stdenv.mkDerivation (
 
       # paths:
 
-    ] ++ mesonFeatures.mesonFlags;
+    ]
+    ++ mesonFeatures.mesonFlags;
 
     # We use autopatchelf because of systemd dlopening things
     autoPatchelfFlags = [ "--keep-libc" ];
